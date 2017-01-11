@@ -28,17 +28,20 @@ else
 fi
 
 DefaultOutput=$(sed -e '/output/ !d' $PathScript) #mira si en el script hay una carpeta de salida
+arrOUT=(${DefaultOutput// / }) #parte el texto en DefaultOutput por los espacios
 
 if [ -z $2 ]; then #mira si el argumento 2 de la función está vacio
-    if [ -z "$DefaultOutput" ]; then #si no hay una salida en el escript, usa una por defecto
+    if [ -z "${arrOUT[1]}" ]; then #si no hay una salida en el escript, usa una por defecto
 	
 	if [ ! -d ~/Default_output_MG ]; then #Si no existe el directorio lo crea
 	    mkdir ~/Default_output_MG
 	fi
 	PathOutput="~/Default_output_MG/$fecha"
-	echo "output" $PathOutput >> $PathScript #Pone en la última línea del script el output por defecto
+	if [ -z "${arrOUT[0]}" ]; then
+	    echo "output" $PathOutput >> $PathScript #Pone en la última línea del script el output por defecto
+	fi
     else
-	PathOutput=$DefaultOutput #si hay un output en el script y no se dió uno como argumento, entonces usa el del script
+	PathOutput=${arrOUT[1]} #si hay un output en el script y no se dió uno como argumento, entonces usa el del script
     fi
 else
     PathOutput=$2 #Si se dió un output como argumento, este será el usado.
@@ -54,8 +57,11 @@ rm $PathScript 2> /dev/null
 cat $PathScript.tmp | sed '/output/c\output '$PathOutput' ' > $PathScript 
 rm $PathScript.tmp 2> /dev/null
 
-#mg5_aMC $PathScript
+mg5_aMC $PathScript
 
+cd $PathOutput
+./bin/generate_events -f
+cd -
 
 #cat sigmaplotter3.f | sed '/!Marca para cambiar con bash/c\       flagzp = '$i' !Marca para cambiar con bash'>> sigmaplotter.f
 #sed 's/Gerardo Gutierrez Gutierrez/'"$participante"'/' ./TEMPLATES/participante_$Template.svg > ./TMP/acceptance_letter_tmp_$name.svg

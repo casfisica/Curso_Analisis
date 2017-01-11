@@ -1,5 +1,2 @@
 generate p p > t t~
-output ~/Proyectos/MadGraph/Ejemplos_Clase/ExclusiveTTbar
-launch
-0
-0
+output ~/Proyectos/MadGraph/Ejemplos_Clase/ExclusiveTTbar2 
