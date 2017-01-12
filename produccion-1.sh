@@ -6,15 +6,16 @@ fecha=$(date +"%d-%m-%y_%T")
 ## export MadGrapgSYS=/home/camilo/MG-Pythia/MG5_aMC_v2_5_1/
 ## export PATH=$PATH:$MadGrapgSYS/bin
 
-###############################################################################################
-#                                       FLAGS                                                 #        
-###############################################################################################
+###########################################################################
+# 				FLAGS	          		          #
+###########################################################################
 flagOut=True
 
 
 
 
-##################################END FLAGS###################################################
+##############################END FLAGS####################################
+
 function Error {
     echo ""
     echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents]"
@@ -36,9 +37,10 @@ else
     PathScript=$1
 fi
 
-DefaultOutput=$(sed -e '/output/ !d' $PathScript) #mira si en el script hay una carpeta de salida
-arrOUT=(${DefaultOutput// / }) #parte el texto en DefaultOutput por los espacios
-
+#mira si en el script hay una carpeta de salida
+DefaultOutput=$(sed -e '/output/ !d' $PathScript)
+#parte el texto en DefaultOutput por los espacios
+arrOUT=(${DefaultOutput// / })
 
 ##############################################################################
 #                            OPCIONES POR DEFECTO                            #
@@ -48,11 +50,10 @@ Nevents=10000                                   #Numero de eventos por defecto
 DefaultOutDir="~/Default_output_MG/$fecha"         #Salida por defecto
 
 
-#############################################################################
+###########################END OPCIONES POR DEFECTO###########################
 
-#LEER LAS OPCIONES desde linea de comandos
+#Lee las opciones desde linea de comandos
 
-    
 for var in "$@" #Corre sobre todos los argumentos
 do
     while IFS='=' read Opc Val; do #separa por = los argumentos
