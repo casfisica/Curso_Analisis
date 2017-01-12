@@ -6,11 +6,20 @@ fecha=$(date +"%d-%m-%y_%T")
 ## export MadGrapgSYS=/home/camilo/MG-Pythia/MG5_aMC_v2_5_1/
 ## export PATH=$PATH:$MadGrapgSYS/bin
 
+###############################################################################################
+#                                       FLAGS                                                 #        
+###############################################################################################
+flagOut=True
+
+
+
+
+##################################END FLAGS###################################################
 function Error {
     echo ""
-    echo "usage:" $0 "<path/script> [path/output] [NEvent]"
+    echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents]"
     echo ""
-    echo ""
+    echo "Nevents: number of events, 10000=default"
     echo ""
     exit 0
 }
@@ -30,38 +39,97 @@ fi
 DefaultOutput=$(sed -e '/output/ !d' $PathScript) #mira si en el script hay una carpeta de salida
 arrOUT=(${DefaultOutput// / }) #parte el texto en DefaultOutput por los espacios
 
-if [ -z $2 ]; then #mira si el argumento 2 de la función está vacio
-    if [ -z "${arrOUT[1]}" ]; then #si no hay una salida en el escript, usa una por defecto
+
+##############################################################################
+#                            OPCIONES POR DEFECTO                            #
+##############################################################################
+
+Nevents=10000                                   #Numero de eventos por defecto
+DefaultOutDir="~/Default_output_MG/$fecha"         #Salida por defecto
+
+
+#############################################################################
+
+#LEER LAS OPCIONES desde linea de comandos
+
+    
+for var in "$@" #Corre sobre todos los argumentos
+do
+    while IFS='=' read Opc Val; do #separa por = los argumentos
+    
 	
-	if [ ! -d ~/Default_output_MG ]; then #Si no existe el directorio lo crea
-	    mkdir ~/Default_output_MG
+	if [ "$Opc" = -Ne ]; then
+	    if [ -z "$Val" ]; then
+		echo "-Ne is empty, using the default Ne=10000"		
+	    else
+		Nevents=$Val
+	    fi
 	fi
-	PathOutput="~/Default_output_MG/$fecha"
+	
+	if [ "$Opc" = -Ph ]; then  
+	    if [ -z "$Val" ]; then #mira si el argumento -Ph de la función está vacio
+		echo "Ph empty, using default or script path"
+		flagOut=True
+      	    else
+		PathOutput=$Val #Si se dió un output como argumento, este será el usado.
+		flagOut=False
+	    fi
+	fi
+	
+	
+    done <<< "$var"
+
+done #Fin for para OPCIONES
+
+
+
+
+#Establece la salida
+if [ "$flagOut" = True ]; then
+    DefaultOutput=$(sed -e '/output/ !d' $PathScript) #mira si en el script hay una carpeta de salida
+    arrOUT=(${DefaultOutput// / }) #parte el texto en DefaultOutput por los espacios  
+    if [ -z "${arrOUT[1]}" ]; then #si no hay una salida en el escript, usa una por defecto
+	PathOutput=$DefaultOutdir
 	if [ -z "${arrOUT[0]}" ]; then
 	    echo "output" $PathOutput >> $PathScript #Pone en la última línea del script el output por defecto
 	fi
     else
-	PathOutput=${arrOUT[1]} #si hay un output en el script y no se dió uno como argumento, entonces usa el del script
+	PathOutput=${arrOUT[1]} #si hay un output en el script y no se dió uno como argumento, entonces usa el del script  
     fi
-else
-    PathOutput=$2 #Si se dió un output como argumento, este será el usado.
 fi
 
-echo $PathScript
-echo $PathOutput
-#cat $PathScript
 
+
+#echo $Nevents
+#echo $PathScript
+#echo $PathOutput
+
+
+
+cat $PathScript | sed '/output/c\output '$PathOutput' ' > $PathScript.tmp 
+cp $PathScript.tmp $PathScript
 rm $PathScript.tmp 2> /dev/null
-cp $PathScript $PathScript.tmp
-rm $PathScript 2> /dev/null
-cat $PathScript.tmp | sed '/output/c\output '$PathOutput' ' > $PathScript 
-rm $PathScript.tmp 2> /dev/null
 
-mg5_aMC $PathScript
+mg5_aMC $PathScript #Creo la carpeta que contiene
 
-cd $PathOutput
-./bin/generate_events -f
-cd -
+#MODIFICO LA CONFIGURACION PARA QUE NO ABRA EL NAVEGADOR POR DEFECTO
+eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# automatic_html_opening = True/c\automatic_html_opening = False'>> $PathOutput/Cards/me5_configuration.txt.tmp"
+eval "cp $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
+eval "rm $PathOutput/Cards/me5_configuration.txt.tmp 2> /dev/null"
+
+#MODIFICO LA runcard PARA tener el número de eventos deseado
+eval "cat $PathOutput/Cards/run_card.dat | sed '/#! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "cp $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+eval "rm $PathOutput/Cards/run_card.dat.tmp 2> /dev/null"
+
+
+
+
+
+
+execute=$(echo $PathOutput"/bin/generate_events -f")
+eval "$execute"
 
 #cat sigmaplotter3.f | sed '/!Marca para cambiar con bash/c\       flagzp = '$i' !Marca para cambiar con bash'>> sigmaplotter.f
 #sed 's/Gerardo Gutierrez Gutierrez/'"$participante"'/' ./TEMPLATES/participante_$Template.svg > ./TMP/acceptance_letter_tmp_$name.svg
+#! Number of unweighted events requested 
