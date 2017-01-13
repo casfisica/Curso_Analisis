@@ -1,2 +1,2 @@
 generate p p > t t~
-output ~/Proyectos/MadGraph/Ejemplos_Clase/ExclusiveTTbar2 
+output ~/cas/cas/ 

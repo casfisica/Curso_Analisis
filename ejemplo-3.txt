@@ -2,7 +2,4 @@ define p = u u~ d d~ c c~ s s~ b b~ g
 define j = p
 generate p p > t t~ @0
 add process p p > t t~ j @1
-output ~/Proyectos/MadGraph/Ejemplos_Clase/InclusiveTTbar1J
-launch
-0
-0
+output ~/Proyectos/MadGraph/Ejemplos_Clase/InclusiveTTbar1J 
