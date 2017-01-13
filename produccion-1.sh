@@ -10,7 +10,7 @@ fecha=$(date +"%d-%m-%y_%T")
 # 				FLAGS	          		          #
 ###########################################################################
 flagOut=True
-
+flagDebug=False
 
 
 
@@ -77,12 +77,26 @@ do
 	    fi
 	fi
 	
+	# Para hacer el depurado de errores mas sencillo
+	if [ "$Opc" = -d ]; then  
+	    flagDebug=True
+	fi
+	
+	
 	
     done <<< "$var"
 
 done #Fin for para OPCIONES
 
-
+if [ "$flagDebug" = True ]; then
+    echo "Lanching in Debugging mode de script" $0
+    echo "3"
+    sleep 1s
+    echo "2"
+    sleep 1s
+    echo "1"
+    sleep 1s
+fi
 
 
 #Establece la salida
@@ -100,32 +114,27 @@ if [ "$flagOut" = True ]; then
 fi
 
 
+if [ "$flagDebug" = True ]; then
+    echo "Numero de eventos=" $Nevents
+    echo "Path Script:" $PathScript
+    echo "Path Output:" $PathOutput
+fi
 
-#echo $Nevents
-#echo $PathScript
-#echo $PathOutput
-
-
-
+#Escribo el path de salida en el script que ejecuta MadGraph 
 cat $PathScript | sed '/output/c\output '$PathOutput' ' > $PathScript.tmp 
 cp $PathScript.tmp $PathScript
 rm $PathScript.tmp 2> /dev/null
 
-mg5_aMC $PathScript #Creo la carpeta que contiene
+#Genero la carpeta que contiene los programas de MadGraph
+mg5_aMC $PathScript 
 
 #MODIFICO LA CONFIGURACION PARA QUE NO ABRA EL NAVEGADOR POR DEFECTO
 eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# automatic_html_opening = True/c\automatic_html_opening = False'>> $PathOutput/Cards/me5_configuration.txt.tmp"
-eval "cp $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
-eval "rm $PathOutput/Cards/me5_configuration.txt.tmp 2> /dev/null"
+eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
 #MODIFICO LA runcard PARA tener el número de eventos deseado
-eval "cat $PathOutput/Cards/run_card.dat | sed '/#! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
-eval "cp $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
-eval "rm $PathOutput/Cards/run_card.dat.tmp 2> /dev/null"
-
-
-
-
+eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 
 execute=$(echo $PathOutput"/bin/generate_events -f")
