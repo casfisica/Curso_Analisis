@@ -140,6 +140,21 @@ eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 execute=$(echo $PathOutput"/bin/generate_events -f")
 eval "$execute"
 
+RUNCOM=$(eval "ls $PathOutput/Events/")
+
+while IFS='_' read XX RUN; do #separa por _ los argumentos                                                                                                                        
+
+    echo "pythia8 run"$RUN >> script.txt
+    echo "3" > script.txt
+    echo "0" > script.txt
+    execute1=$(echo $PathOutput"/bin/madevent script.txt")
+    eval "$execute1"
+    rm script.txt
+    
+done <<< "$RUNCOM"
+
+
+
 #cat sigmaplotter3.f | sed '/!Marca para cambiar con bash/c\       flagzp = '$i' !Marca para cambiar con bash'>> sigmaplotter.f
 #sed 's/Gerardo Gutierrez Gutierrez/'"$participante"'/' ./TEMPLATES/participante_$Template.svg > ./TMP/acceptance_letter_tmp_$name.svg
 #! Number of unweighted events requested 
