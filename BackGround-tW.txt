@@ -5,7 +5,7 @@ define WW = W+ W-
 define BB = b b~
 define MUMU= mu+ mu-
 define NUNU= vm vm~
-generate p p > Top WW @0, (Top > WW BB, WW > MUMU NUNU), (WW- > MUMU NUNU)
-generate p p > Top WW j @1, (Top > WW BB, WW > MUMU NUNU), (WW- > MUMU NUNU)
-generate p p > Top WW j j @2, (Top > WW BB, WW > MUMU NUNU), (WW- > MUMU NUNU)
-output ~/Proyectos/MadGraph/Datos/BackGround-tW
+generate p p > Top WW @0, (Top > WW BB, WW > MUMU NUNU), (WW > MUMU NUNU)
+generate p p > Top WW j @1, (Top > WW BB, WW > MUMU NUNU), (WW > MUMU NUNU)
+generate p p > Top WW j j @2, (Top > WW BB, WW > MUMU NUNU), (WW > MUMU NUNU)
+output ~/Proyectos/MadGraph/Datos/BackGround-tW 

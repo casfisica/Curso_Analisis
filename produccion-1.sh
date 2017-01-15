@@ -50,6 +50,12 @@ Nevents=10000                                   #Numero de eventos por defecto
 DefaultOutDir="~/Default_output_MG/$fecha"         #Salida por defecto
 qcut=-1
 xcut=0.0
+flagDelphes=False
+flagPythia=False
+
+
+
+
 
 ###########################END OPCIONES POR DEFECTO###########################
 
@@ -96,11 +102,18 @@ do
             if [ -z "$Val" ]; then #mira si el argumento -Q de la función está vacio                                                                                              
                 echo "Xq (xqcut) is empty, using default value 0.0"
             else
-                xqcut=$Val #Si se dió un valor de qcut, este será el usado.                                                                                                         
-            fi
+                xqcut=$Val #Si se dió un valor de qcut, este será el usado.
+	    fi
         fi
 
+	
+        if [ "$Opc" = -Delp ]; then
+	    flagDelphes=True	    
+        fi
 
+	if [ "$Opc" = -Pyt ]; then
+	    flagPythia=True
+        fi
 
 	
 	
@@ -160,18 +173,21 @@ eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_confi
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
+
+if [ "$flagPythia" = True ]; then
 #creo (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
 eval "cat $PathOutput/Cards/pythia8_card_default.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
 eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
-
+fi
 
 #Modifico el xqcut en run_card.dat
 eval "cat $PathOutput/Cards/run_card.dat | sed '/  0.0   = xqcut ! minimum kt jet measure between partons/c\  $xqcut   = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
+if [ "$flagDelphes" = True ]; then
 #Creo la delfestt_card.dat usando la del cms
 eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat"
-
+fi
 
 execute=$(echo $PathOutput"/bin/generate_events -f")
 #eval "$execute"
