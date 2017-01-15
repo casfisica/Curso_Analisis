@@ -18,8 +18,8 @@ flagDebug=False
 
 function Error {
     echo ""
-    echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents]"
-    echo ""
+    echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents] [-d] [-Q=qcut_value] [-Xq=xcut_value]"
+    echo " "
     echo "Nevents: number of events, 10000=default"
     echo ""
     exit 0
@@ -141,6 +141,7 @@ if [ "$flagDebug" = True ]; then
     echo "Path Output:" $PathOutput
     echo "qcut" $qcut
     echo "xqcut" $xqcut
+    sleep 5
 fi
 
 #Escribo el path de salida en el script que ejecuta MadGraph 
@@ -159,8 +160,8 @@ eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_confi
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
-#Modifico qcut en la pythia8_card.dat 
-eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+#creo (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
+eval "cat $PathOutput/Cards/pythia8_card_default.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
 eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
 
 
@@ -168,22 +169,31 @@ eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.d
 eval "cat $PathOutput/Cards/run_card.dat | sed '/  0.0   = xqcut ! minimum kt jet measure between partons/c\  $xqcut   = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
+#Creo la delfestt_card.dat usando la del cms
+eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat"
+
 
 execute=$(echo $PathOutput"/bin/generate_events -f")
-eval "$execute"
+#eval "$execute"
 
-RUNCOM=$(eval "ls $PathOutput/Events/")
 
-while IFS='_' read XX RUN; do #separa por _ los argumentos                                                                                                                        
+#RUNCOM=$(eval "ls $PathOutput/Events/")
+#if [ "$flagDebug" = True ]; then
+#    echo "runing pythia"
+#    echo "===================================================================================================="
+#    sleep 5
+#fi
 
-    echo "pythia8 run"$RUN >> script.txt
-    echo "3" > script.txt
-    echo "0" > script.txt
-    execute1=$(echo $PathOutput"/bin/madevent script.txt")
-    eval "$execute1"
-    rm script.txt
+#while IFS='_' read XX RUN; do #separa por _ los argumentos                                                                                                                        
+
+#    echo "pythia8 run"$RUN >> script.txt
+#    echo "3" > script.txt
+#    echo "0" > script.txt
+#    execute1=$(echo $PathOutput"/bin/madevent script.txt")
+#    eval "$execute1"
+#    rm script.txt
     
-done <<< "$RUNCOM"
+#done <<< "$RUNCOM"
 
 
 
