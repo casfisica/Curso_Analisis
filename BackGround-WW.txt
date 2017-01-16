@@ -1,0 +1,7 @@
+define p = u u~ d d~ c c~ s s~ b b~ g
+define j = p
+generate p p > w+ w- @0, (w+ > mu+ vm), (w- > mu- vm~)
+add process p p > w+ w- j @1, (w+ > mu+ vm), (w- > mu- vm~)
+add process p p > w+ w- j j @2, (w+ > mu+ vm), (w- > mu- vm~)
+add process p p > w+ w- j j j @3, (w+ > mu+ vm), (w- > mu- vm~)
+output ~/Proyectos/MadGraph/Datos/BackGround-WW

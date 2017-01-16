@@ -18,10 +18,12 @@ flagDebug=False
 
 function Error {
     echo ""
-    echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents]"
-    echo ""
+    echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents] [-d] [-Q=qcut_value] [-Xq=xcut_value] [-mm2l=minim_mass_lepton_pair] [-Run=Run_Times]"
+    echo " "
     echo "Nevents: number of events, 10000=default"
-    echo ""
+    echo "Run_Times: Number of times MG5_aMC is going to be execute"
+    echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=30 -Xq=50 -mm2l=50 -Run=10"
+
     exit 0
 }
 
@@ -50,6 +52,12 @@ Nevents=10000                                   #Numero de eventos por defecto
 DefaultOutDir="~/Default_output_MG/$fecha"         #Salida por defecto
 qcut=-1
 xcut=0.0
+flagDelphes=False
+flagPythia=False
+mmass2lep=0.0                                    #masa invariante minima de dos leptones
+Runtimes=1                                      # número de veces que se ejecuta MG5_aMC
+
+
 
 ###########################END OPCIONES POR DEFECTO###########################
 
@@ -96,11 +104,35 @@ do
             if [ -z "$Val" ]; then #mira si el argumento -Q de la función está vacio                                                                                              
                 echo "Xq (xqcut) is empty, using default value 0.0"
             else
-                xqcut=$Val #Si se dió un valor de qcut, este será el usado.                                                                                                         
-            fi
+                xqcut=$Val #Si se dió un valor de qcut, este será el usado.
+	    fi
+        fi
+
+	
+        if [ "$Opc" = -Delp ]; then
+	    flagDelphes=True	    
+        fi
+
+	if [ "$Opc" = -Pyt ]; then
+	    flagPythia=True
         fi
 
 
+	if [ "$Opc" = -mm2l ]; then
+            if [ -z "$Val" ]; then #mira si el argumento -mm2l de la función está vacio
+                echo "Pmm2l empty, using default value 0.0"
+            else
+		mmass2lep=$Val
+            fi
+        fi
+
+	if [ "$Opc" = -Run ]; then
+            if [ -z "$Val" ]; then #mira si el argumento -mm2l de la función está vacio
+		echo "Run empty, using default value 1"
+            else
+                Runtimes=$Val
+            fi
+        fi
 
 	
 	
@@ -141,6 +173,7 @@ if [ "$flagDebug" = True ]; then
     echo "Path Output:" $PathOutput
     echo "qcut" $qcut
     echo "xqcut" $xqcut
+    sleep 5
 fi
 
 #Escribo el path de salida en el script que ejecuta MadGraph 
@@ -155,38 +188,43 @@ mg5_aMC $PathScript
 eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# automatic_html_opening = True/c\automatic_html_opening = False'>> $PathOutput/Cards/me5_configuration.txt.tmp"
 eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
-#MODIFICO LA runcard PARA tener el número de eventos deseado
+#MODIFICO LA runcard PARA tener el número de eventos deseado y para hacer un corte en el pt minimo de los leptones cargados
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
-#Modifico qcut en la pythia8_card.dat 
-eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
-eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
-
+eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (same flavour) lepton pair/c\ $mmass2lep   = mmll    ! min invariant mass of l+l- (same flavour) lepton pair'>> $PathOutut/Cards/run_card.dat.tmp"
+eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 #Modifico el xqcut en run_card.dat
 eval "cat $PathOutput/Cards/run_card.dat | sed '/  0.0   = xqcut ! minimum kt jet measure between partons/c\  $xqcut   = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 
+if [ "$flagPythia" = True ]; then
+#creo (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
+eval "cat $PathOutput/Cards/pythia8_card_default.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+fi
+
+if [ "$flagDelphes" = True ]; then
+#Creo la delfestt_card.dat usando la del cms
+eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat"
+fi
+
 execute=$(echo $PathOutput"/bin/generate_events -f")
-eval "$execute"
 
-RUNCOM=$(eval "ls $PathOutput/Events/")
+for i in `seq 1 $Run`;
+do
+    echo "===================================================================================================="   
+    echo "Run"$i
+    echo "===================================================================================================="   
 
-while IFS='_' read XX RUN; do #separa por _ los argumentos                                                                                                                        
+    #Modifico la run Card con un valor de iseed diferente cada ves que ejecuto
+    Iseed=echo $(($RANDOM%10)) #número aleatorio entre 0 y 10, para modificar la semilla del montecarlo
+    eval "cat $PathOutput/Cards/run_card.dat | sed '/! rnd seed (0=assigned automatically=default))/c\  $Iseed   = iseed   ! rnd seed (0=assigned automatically=default))'>> $PathOutput/Cards/run_card.dat.tmp"
+    eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
-    echo "pythia8 run"$RUN >> script.txt
-    echo "3" > script.txt
-    echo "0" > script.txt
-    execute1=$(echo $PathOutput"/bin/madevent script.txt")
-    eval "$execute1"
-    rm script.txt
-    
-done <<< "$RUNCOM"
+    eval "$execute"
 
+done 
 
-
-#cat sigmaplotter3.f | sed '/!Marca para cambiar con bash/c\       flagzp = '$i' !Marca para cambiar con bash'>> sigmaplotter.f
-#sed 's/Gerardo Gutierrez Gutierrez/'"$participante"'/' ./TEMPLATES/participante_$Template.svg > ./TMP/acceptance_letter_tmp_$name.svg
-#! Number of unweighted events requested 
