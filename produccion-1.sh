@@ -58,7 +58,6 @@ mmass2lep=0.0                                    #masa invariante minima de dos 
 Runtimes=1                                      # número de veces que se ejecuta MG5_aMC
 
 
-
 ###########################END OPCIONES POR DEFECTO###########################
 
 #Lee las opciones desde linea de comandos
@@ -127,7 +126,7 @@ do
         fi
 
 	if [ "$Opc" = -Run ]; then
-            if [ -z "$Val" ]; then #mira si el argumento -mm2l de la función está vacio
+            if [ -z "$Val" ]; then #mira si el argumento -Run de la función está vacio
 		echo "Run empty, using default value 1"
             else
                 Runtimes=$Val
@@ -192,11 +191,11 @@ eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_confi
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
-eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (same flavour) lepton pair/c\ $mmass2lep   = mmll    ! min invariant mass of l+l- (same flavour) lepton pair'>> $PathOutut/Cards/run_card.dat.tmp"
+eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (same flavour) lepton pair/c\ $mmass2lep   = mmll    ! min invariant mass of l+l- (same flavour) lepton pair'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 #Modifico el xqcut en run_card.dat
-eval "cat $PathOutput/Cards/run_card.dat | sed '/  0.0   = xqcut ! minimum kt jet measure between partons/c\  $xqcut   = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "cat $PathOutput/Cards/run_card.dat | sed '/! minimum kt jet measure between partons/c\  $xqcut  = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 
@@ -213,17 +212,17 @@ fi
 
 execute=$(echo $PathOutput"/bin/generate_events -f")
 
-for i in `seq 1 $Run`;
+for i in `seq 1 $Runtimes`;
 do
     echo "===================================================================================================="   
     echo "Run"$i
     echo "===================================================================================================="   
-
+    
     #Modifico la run Card con un valor de iseed diferente cada ves que ejecuto
-    Iseed=echo $(($RANDOM%10)) #número aleatorio entre 0 y 10, para modificar la semilla del montecarlo
+    Iseed=$(echo $(($RANDOM%10))) #número aleatorio entre 0 y 10, para modificar la semilla del montecarlo
     eval "cat $PathOutput/Cards/run_card.dat | sed '/! rnd seed (0=assigned automatically=default))/c\  $Iseed   = iseed   ! rnd seed (0=assigned automatically=default))'>> $PathOutput/Cards/run_card.dat.tmp"
     eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
-
+    
     eval "$execute"
 
 done 
