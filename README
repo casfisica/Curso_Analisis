@@ -1,0 +1,4 @@
+To use Launch.sh in a server you should execute with nohub
+
+nohup ./Launch.sh > Launch.log &
+
