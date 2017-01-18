@@ -1,4 +1,4 @@
 define p = u u~ d d~ c c~ s s~ b b~ g
 generate p p > t t~
-output ~/Proyectos/MadGraph/Ejemplos_Clase/ExclusiveTTbar5Flavourp 
+output /scratch/camilo/Proyectos/MadGraph/Ejemplos_Clase/ExclusiveTTbar5Flavourp 
 
