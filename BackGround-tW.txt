@@ -8,4 +8,4 @@ define NUNU= vm vm~
 generate p p > Top WW @0, (Top > WW BB, WW > MUMU NUNU), (WW > MUMU NUNU)
 add process p p > Top WW j @1, (Top > WW BB, WW > MUMU NUNU), (WW > MUMU NUNU)
 add process p p > Top WW j j @2, (Top > WW BB, WW > MUMU NUNU), (WW > MUMU NUNU)
-output ~/Proyectos/MadGraph/Datos/BackGround-tW 
+output /scratch/camilo/Proyectos/MadGraph/Datos/BackGround-tW 
