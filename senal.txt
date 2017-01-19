@@ -1,4 +1,4 @@
 define p = u u~ d d~ c c~ s s~ b b~ g
 define j = p
 generate p p > t t~, (t > w+ b, w+ > mu+ vm), (t~ > w- b~, w- > mu- vm~)
-output /scratch/camilo/Proyectos/MadGraph/Datos/señal 
+output /scratch/camilo/Proyectos/MadGraph/Datos/senal 
