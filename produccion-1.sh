@@ -211,7 +211,7 @@ fi
 
 #MODIFICO LA runcard PARA tener el número de eventos deseado y para hacer un corte en el pt minimo de los leptones cargados
 
-eval "cat $PathOutput/Cards/run_card.dat | sed '/True  = use_syst ! Enable systematics studies/c\  False  = use_syst ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "cat $PathOutput/Cards/run_card.dat | sed '/True  = use_syst ! Enable systematics studies/c\   False  = use_syst ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
@@ -245,7 +245,7 @@ do
     echo "===================================================================================================="   
     
     #Modifico la run Card con un valor de iseed diferente cada ves que ejecuto
-    Iseed=$(echo $(($RANDOM%10))) #número aleatorio entre 0 y 10, para modificar la semilla del montecarlo
+    Iseed=$(echo $(($RANDOM%100))) #número aleatorio entre 0 y 10, para modificar la semilla del montecarlo
     eval "cat $PathOutput/Cards/run_card.dat | sed '/! rnd seed (0=assigned automatically=default))/c\  $Iseed   = iseed   ! rnd seed (0=assigned automatically=default))'>> $PathOutput/Cards/run_card.dat.tmp"
     eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
     

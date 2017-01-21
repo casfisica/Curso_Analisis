@@ -1,4 +1,5 @@
 define p = u u~ d d~ c c~ s s~ b b~ g
-generate p p > t t~
-output /scratch/camilo/Proyectos/MadGraph/Ejemplos_Clase/ExclusiveTTbar5Flavourp 
-
+define j = p
+generate p p > t t~ @0 , (t > w+ b, w+ > mu+ vm), (t~ > w- b~, w- > mu- vm~)
+add process p p > t t~ j @1 , (t > w+ b, w+ > mu+ vm), (t~ > w- b~, w- > mu- vm~)
+output /scratch/camilo/Proyectos/MadGraph/Datos/Signal_prueba-4
