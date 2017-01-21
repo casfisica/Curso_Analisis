@@ -22,7 +22,7 @@ function Error {
     echo " "
     echo "Nevents: number of events, 10000=default"
     echo "Run_Times: Number of times MG5_aMC is going to be execute"
-    echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=30 -Xq=50 -mm2l=50 -Run=10 -delp -Pyt"
+    echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=30 -Xq=50 -mm2l=50 -Run=10 -delp -Pyt -Cl"
 
     exit 0
 }
@@ -57,6 +57,7 @@ flagPythia=False
 mmass2lep=0.0                                    #masa invariante minima de dos leptones
 Runtimes=1                                      # número de veces que se ejecuta MG5_aMC
 flagCluster=False                               # Si va a usar el modo Cluster
+$Clsize=60                                      # Tamaño del cluster por defecto
 
 ###########################END OPCIONES POR DEFECTO###########################
 
@@ -202,9 +203,17 @@ if [ "$flagCluster" = True ]; then
     
     eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_nb_retry = 1/c\cluster_nb_retry = 2'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
+
+    eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_size/c\ cluster_size = $Clsize'>> $PathOutput/Cards/me5_configuration.txt.tmp"
+    eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
+
 fi
 
 #MODIFICO LA runcard PARA tener el número de eventos deseado y para hacer un corte en el pt minimo de los leptones cargados
+
+eval "cat $PathOutput/Cards/run_card.dat | sed '/True  = use_syst ! Enable systematics studies/c\  False  = use_syst ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
