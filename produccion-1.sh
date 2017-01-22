@@ -6,15 +6,8 @@ fecha=$(date +"%d-%m-%y_%T")
 ## export MadGrapgSYS=/home/camilo/MG-Pythia/MG5_aMC_v2_5_1/
 ## export PATH=$PATH:$MadGrapgSYS/bin
 
-###########################################################################
-# 				FLAGS	          		          #
-###########################################################################
-flagOut=True
-flagDebug=False
 
 
-
-##############################END FLAGS####################################
 
 function Error {
     echo ""
@@ -22,7 +15,7 @@ function Error {
     echo " "
     echo "Nevents: number of events, 10000=default"
     echo "Run_Times: Number of times MG5_aMC is going to be execute"
-    echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=30 -Xq=50 -mm2l=50 -Run=10 -delp -Pyt -Cl"
+    echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=50 -Xq=30 -mm2l=50 -Run=10 -Delp -Pyt -Cl=20"
 
     exit 0
 }
@@ -47,7 +40,8 @@ arrOUT=(${DefaultOutput// / })
 ##############################################################################
 #                            OPCIONES POR DEFECTO                            #
 ##############################################################################
-
+flagOut=True
+flagDebug=False
 Nevents=10000                                   #Numero de eventos por defecto
 DefaultOutDir="~/Default_output_MG/$fecha"         #Salida por defecto
 qcut=-1
@@ -56,8 +50,8 @@ flagDelphes=False
 flagPythia=False
 mmass2lep=0.0                                    #masa invariante minima de dos leptones
 Runtimes=1                                      # número de veces que se ejecuta MG5_aMC
-flagCluster=False                               # Si va a usar el modo Cluster
-$Clsize=60                                      # Tamaño del cluster por defecto
+flagClusters=False                               # Si va a usar el modo Cluster
+Clsize=60                                      # Tamaño del cluster por defecto
 
 ###########################END OPCIONES POR DEFECTO###########################
 
@@ -134,9 +128,15 @@ do
             fi
         fi
 
+	
         if [ "$Opc" = -Cl ]; then
-            
-            flagClusters=True
+            if [ -z "$Val" ]; then #mira si el argumento -Cl de la función está vacio                                                                                             
+                echo "Cl is  empty, using default value 8"
+		Clsize=8
+	    else
+                Clsize=$Val
+            fi
+	    flagClusters=True
         fi
 
 	
@@ -178,6 +178,7 @@ if [ "$flagDebug" = True ]; then
     echo "Path Output:" $PathOutput
     echo "qcut" $qcut
     echo "xqcut" $xqcut
+    echo "Cl="$Clsize
     sleep 5
 fi
 
@@ -193,8 +194,12 @@ mg5_aMC $PathScript
 eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# automatic_html_opening = True/c\automatic_html_opening = False'>> $PathOutput/Cards/me5_configuration.txt.tmp"
 eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
-if [ "$flagCluster" = True ]; then
+if [ "$flagClusters" = True ]; then
     
+    if [ "$flagDebug" = True ]; then
+	echo "FlagClusters" $flagClusters
+	sleep 5
+    fi
     eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# run_mode = 2/c\run_mode = 1'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
     
@@ -204,14 +209,14 @@ if [ "$flagCluster" = True ]; then
     eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_nb_retry = 1/c\cluster_nb_retry = 2'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
-    eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_size/c\ cluster_size = $Clsize'>> $PathOutput/Cards/me5_configuration.txt.tmp"
+    eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_size/c\cluster_size = $Clsize'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
 fi
 
 #MODIFICO LA runcard PARA tener el número de eventos deseado y para hacer un corte en el pt minimo de los leptones cargados
 
-eval "cat $PathOutput/Cards/run_card.dat | sed '/True  = use_syst ! Enable systematics studies/c\   False  = use_syst ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "cat $PathOutput/Cards/run_card.dat | sed '/! Enable systematics studies/c\   False  = use_syst      ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
@@ -220,15 +225,27 @@ eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (same flavour) lepton pair/c\ $mmass2lep   = mmll    ! min invariant mass of l+l- (same flavour) lepton pair'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
-#Modifico el xqcut en run_card.dat
+#Modifico el xqcut
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! minimum kt jet measure between partons/c\  $xqcut  = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+
+eval "cat $PathOutput/Cards/run_card.dat | sed '/! 0 no matching, 1 MLM/c\  1     = ickkw ! 0 no matching, 1 MLM'>> $PathOutput/Cards/run_card.dat.tmp"
+eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+
 
 
 if [ "$flagPythia" = True ]; then
 #creo (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
 eval "cat $PathOutput/Cards/pythia8_card_default.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
 eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+
+eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:doShowerKt/c\JetMatching:doShowerKt   = on'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+
+eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:nJetMax/c\JetMatching:nJetMax      = 2'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+
+
 fi
 
 if [ "$flagDelphes" = True ]; then
