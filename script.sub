@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N calvete
+#PBS -l nodes=1
+#PBS -o TORQUE_OUTPUT.txt
+#PBS -e TORQUE_ERROR.txt
+
+
+#ROOT PATH
+export ROOTSYS=/usr
+export PATH=$PATH:$ROOTSYS/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib
+export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$ROOTSYS/lib
+
+#MadGraph
+#alias MG5='/home/camilo/MG-Pythia/MG5_aMC_v2_5_1/bin/mg5_aMC'
+export MadGrapgSYS=/home/camilo/MG-Pythia/MG5_aMC_v2_5_1/
+export PATH=$PATH:$MadGrapgSYS/bin
+
+cd $PBS_O_WORKDIR
+./produccion-1.sh Signal.txt -Ne=100000 -Q=50 -Xq=30 -Run=10 -Delp -Pyt 
