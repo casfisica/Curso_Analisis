@@ -52,6 +52,7 @@ mmass2lep=0.0                                    #masa invariante minima de dos 
 Runtimes=1                                      # número de veces que se ejecuta MG5_aMC
 flagClusters=False                               # Si va a usar el modo Cluster
 Clsize=60                                      # Tamaño del cluster por defecto
+ClPath='/scratch/camilo/MG-Torque'
 
 ###########################END OPCIONES POR DEFECTO###########################
 
@@ -210,6 +211,9 @@ if [ "$flagClusters" = True ]; then
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
     eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_size/c\cluster_size = $Clsize'>> $PathOutput/Cards/me5_configuration.txt.tmp"
+    eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
+
+    eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_temp_path/c\# cluster_temp_path = $ClPath'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
 
 fi
