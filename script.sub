@@ -17,4 +17,4 @@ export MadGrapgSYS=/home/camilo/MG-Pythia/MG5_aMC_v2_5_1/
 export PATH=$PATH:$MadGrapgSYS/bin
 
 cd $PBS_O_WORKDIR
-./produccion-1.sh Signal.txt -Ne=100000 -Q=50 -Xq=30 -Run=10 -Delp -Pyt 
+./produccion-1.sh BackGround-DY_2j.txt -Ne=100000 -Q=50 -Xq=30 -Run=2 -Delp -Pyt 
