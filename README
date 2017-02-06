@@ -1,4 +1,6 @@
-To use Launch.sh in a server you should execute with nohub
+To use script.sub in a server you should execute with torque.
+The patch.sh file is used to fix an error in lhpdf install on MG5_aMC_v2_5_2 version of MadGraph, to use it, you have to
+define the bash variable MadGrapgSYS (path to the MadGraph folder) 
 
-nohup ./Launch.sh > Launch.log &
+qsub script.sub
 
