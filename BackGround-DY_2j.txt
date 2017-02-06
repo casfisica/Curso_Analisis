@@ -3,5 +3,4 @@ define j = p
 generate p p > mu- mu+ @0 /h
 add process p p > mu- mu+ j @1 /h
 add process p p > mu- mu+ j j @2 /h
-add process p p > mu- mu+ j j j @3 /h
-output /scratch/camilo/Proyectos/MadGraph/Datos/BackGround-DY_2j 
+output /scratch/cms/Datos/BackGround-DY_2j 
