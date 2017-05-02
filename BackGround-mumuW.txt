@@ -6,4 +6,4 @@ add process p p > W+ Z, W+ > j j, Z > mu+ mu- @1
 add process p p > W- Z, W- > j j, Z > mu+ mu- @1
 add process p p > W+ Z, W+ > j j, Z > mu+ mu- @2
 add process p p > W- Z, W- > j j, Z > mu+ mu- @2
-output /scratch/cms/Datos/BackGround-mumuW
+output /scratch/cms/Datos/BackGround-mumuW 
