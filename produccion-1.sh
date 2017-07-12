@@ -204,7 +204,7 @@ if [ "$flagClusters" = True ]; then
     eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# run_mode = 2/c\run_mode = 1'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
     
-    eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_type = condor/c\cluster_type = pbs'>> $PathOutput/Cards/me5_configuration.txt.tmp"
+    eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_type = condor/c\cluster_type = lsf'>> $PathOutput/Cards/me5_configuration.txt.tmp"
     eval "mv $PathOutput/Cards/me5_configuration.txt.tmp $PathOutput/Cards/me5_configuration.txt"
     
     eval "cat $PathOutput/Cards/me5_configuration.txt | sed '/# cluster_nb_retry = 1/c\cluster_nb_retry = 2'>> $PathOutput/Cards/me5_configuration.txt.tmp"
