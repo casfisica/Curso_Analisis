@@ -53,7 +53,7 @@ Runtimes=1                                      # número de veces que se ejecut
 flagClusters=False                               # Si va a usar el modo Cluster
 Clsize=60                                      # Tamaño del cluster por defecto
 ClPath='/scratch/camilo/MG-Torque'
-
+flagDelphesPath=False
 ###########################END OPCIONES POR DEFECTO###########################
 
 #Lee las opciones desde linea de comandos
@@ -90,26 +90,44 @@ do
 	if [ "$Opc" = -Q ]; then
             if [ -z "$Val" ]; then #mira si el argumento -Q de la función está vacio                                                                                              
                 echo "Q (qcut) is empty, using default value -1"
+		flagQ=False
             else
-                qcut=$Val #Si se dió un valor de qcut, este será el usado.                                                                                           
+                qcut=$Val #Si se dió un valor de qcut, este será el usado.
+                flagQ=True
             fi
         fi
 
 	if [ "$Opc" = -Xq ]; then
             if [ -z "$Val" ]; then #mira si el argumento -Q de la función está vacio                                                                                              
                 echo "Xq (xqcut) is empty, using default value 0.0"
+		FlagXq=False
             else
                 xqcut=$Val #Si se dió un valor de qcut, este será el usado.
+		FlagXq=True
 	    fi
         fi
 
 	
         if [ "$Opc" = -Delp ]; then
-	    flagDelphes=True	    
+	    flagDelphes=True
+	    if [ -z "$Val" ]; then #mira si el argumento -DelpPath de la función está vacio                                                                                             
+                echo "Delp is  empty, using default value (CMS)"
+		flagDelphesPath=False
+	    else
+                DelphesPath=$Val
+		flagDelphesPath=True
+	    fi
         fi
 
 	if [ "$Opc" = -Pyt ]; then
 	    flagPythia=True
+	     if [ -z "$Val" ]; then #mira si el argumento -Pyt de la función está vacio                                                                                             
+                echo "Pyt is  empty, using default value"
+		flagPythiaPath=False
+	    else
+                PythiaPath=$Val
+		flagPythiaPath=True
+	    fi
         fi
 
 
@@ -140,7 +158,6 @@ do
 	    flagClusters=True
         fi
 
-	
 	
 	
     done <<< "$var"
@@ -230,8 +247,10 @@ eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (s
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 #Modifico el xqcut
-eval "cat $PathOutput/Cards/run_card.dat | sed '/! minimum kt jet measure between partons/c\  $xqcut  = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
-eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+if [ "$flagXq" = True ]; then
+    eval "cat $PathOutput/Cards/run_card.dat | sed '/! minimum kt jet measure between partons/c\  $xqcut  = xqcut ! minimum kt jet measure between partons'>> $PathOutput/Cards/run_card.dat.tmp"
+    eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+fi
 
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! 0 no matching, 1 MLM/c\  1     = ickkw ! 0 no matching, 1 MLM'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
@@ -239,22 +258,40 @@ eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 
 if [ "$flagPythia" = True ]; then
-#creo (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
-eval "cat $PathOutput/Cards/pythia8_card_default.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
-eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
-
-eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:doShowerKt/c\JetMatching:doShowerKt   = on'>> $PathOutput/Cards/pythia8_card.dat.tmp"
-eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
-
-eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:nJetMax/c\JetMatching:nJetMax      = 2'>> $PathOutput/Cards/pythia8_card.dat.tmp"
-eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
-
+     if [ "$flagDelphesPath" = True ]; then
+	 eval "cp $PythiaPath $PathOutput/Cards/pythia8_card.dat"
+	 #creo desde el el argumento de la funcion (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
+	 if [ "$flagQ" = True ]; then
+	     eval "cat $PythiaPath | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+	     eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+	 
+	     eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:doShowerKt/c\JetMatching:doShowerKt   = on'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+	     eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+	     
+	     eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:nJetMax/c\JetMatching:nJetMax      = 2'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+	     eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+	 fi
+     else
+	 #creo desde el default (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
+	 eval "cat $PathOutput/Cards/pythia8_card_default.dat | sed '/JetMatching:qCut/c\JetMatching:qCut         = $qcut'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+	 eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+	 
+	 eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:doShowerKt/c\JetMatching:doShowerKt   = on'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+	 eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+	 
+	 eval "cat $PathOutput/Cards/pythia8_card.dat | sed '/JetMatching:nJetMax/c\JetMatching:nJetMax      = 2'>> $PathOutput/Cards/pythia8_card.dat.tmp"
+	 eval "mv $PathOutput/Cards/pythia8_card.dat.tmp $PathOutput/Cards/pythia8_card.dat"
+     fi
 
 fi
 
 if [ "$flagDelphes" = True ]; then
-#Creo la delfestt_card.dat usando la del cms
-eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat"
+    if [ "$flagDelphesPath" = True ]; then
+	eval "cp $DelphesPath $PathOutput/Cards/delphes_card.dat"
+    else
+	#Creo la delfestt_card.dat usando la del cms
+	eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat"
+    fi
 fi
 
 execute=$(echo $PathOutput"/bin/generate_events -f")
