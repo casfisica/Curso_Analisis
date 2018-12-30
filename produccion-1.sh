@@ -286,11 +286,17 @@ if [ "$flagPythia" = True ]; then
 fi
 
 if [ "$flagDelphes" = True ]; then
+    
     if [ "$flagDelphesPath" = True ]; then
+	if [ "$flagDebug" = True ]; then
+	    echo "Using alternative Delphes Card"
+	    sleep 5
+	fi
+
 	eval "cp $DelphesPath $PathOutput/Cards/delphes_card.dat"
     else
 	#Creo la delfestt_card.dat usando la del cms
-	eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat"
+	eval "cp $PathOutput/Cards/delphes_card_CMS.dat $PathOutput/Cards/delphes_card.dat" 
     fi
 fi
 
@@ -301,12 +307,13 @@ do
     echo "===================================================================================================="   
     echo "Run"$i
     echo "===================================================================================================="   
-    
+
     #Modifico la run Card con un valor de iseed diferente cada ves que ejecuto
     Iseed=$(echo $(($RANDOM%100))) #número aleatorio entre 0 y 10, para modificar la semilla del montecarlo
     eval "cat $PathOutput/Cards/run_card.dat | sed '/! rnd seed (0=assigned automatically=default))/c\  $Iseed   = iseed   ! rnd seed (0=assigned automatically=default))'>> $PathOutput/Cards/run_card.dat.tmp"
     eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
     
     eval "$execute"
+    
 done 
 
