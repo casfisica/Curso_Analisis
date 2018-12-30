@@ -258,7 +258,7 @@ eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
 
 if [ "$flagPythia" = True ]; then
-     if [ "$flagDelphesPath" = True ]; then
+     if [ "$flagPythiaPath" = True ]; then
 	 eval "cp $PythiaPath $PathOutput/Cards/pythia8_card.dat"
 	 #creo desde el el argumento de la funcion (para que ejecute pytia) y  Modifico qcut en la pythia8_card.dat 
 	 if [ "$flagQ" = True ]; then
