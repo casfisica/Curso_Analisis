@@ -1,0 +1,16 @@
+define p = u u~ d d~ c c~ s s~ b b~ g 
+define j = p
+
+define ell- = mu- ta-
+define ell+ = mu+ ta+
+define vell = vm vt
+define vell~ = vm~ vt~
+
+generate p p > w+ j @1, (w+ > ell+ vell) 
+add process p p > w- j @1, (w- > ell- vell~) 
+add process p p > w- j j @2, (w- > ell- vell~) 
+add process p p > w+ j j @2, (w+ > ell+ vell) 
+add process p p > w- j j j @3, (w- > ell- vell~) 
+add process p p > w+ j j j @3, (w+ > ell+ vell)
+
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-llW 

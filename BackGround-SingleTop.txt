@@ -1,0 +1,23 @@
+set group_subprocesses Auto
+set ignore_six_quark_processes False
+set loop_optimized_output True
+set loop_color_flows False
+set gauge unitary
+set complex_mass_scheme False
+set max_npoint_for_channel 0
+import model sm
+define p = g u c d s u~ c~ d~ s~
+define j = g u c d s u~ c~ d~ s~
+define l+ = e+ mu+
+define l- = e- mu-
+define vl = ve vm vt
+define vl~ = ve~ vm~ vt~
+define p = u u~ d d~ c c~ s s~ b b~ g
+define j = p
+generate p p > t j @1, (t > b w+, (w+ > mu+ vm))
+add process p p > t~ j @1, (t~ > b~ w-, (w- > mu- vm~))
+add process p p > t j j @2, (t > b w+, (w+ > mu+ vm))
+add process p p > t~ j j @2, (t~ > b~ w-, (w- > mu- vm~))
+add process p p > t j j j @3, (t > b w+, (w+ > mu+ vm))
+add process p p > t~ j j j @3, (t~ > b~ w-, (w- > mu- vm~))
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-SingleTop

@@ -1,0 +1,17 @@
+define p = u u~ d d~ c c~ s s~ b b~ g 
+define p = g u c d s u~ c~ d~ s~ 
+define j = g u c d s u~ c~ d~ s~ 
+define l+ = e+ mu+ ta+
+define l- = e- mu- ta-
+define vl = ve vm vt 
+define vl~ = ve~ vm~ vt~ 
+define p = u u~ d d~ c c~ s s~ b b~ g 
+define j = p 
+generate p p > w+ j @1, (w+ > ta+ vt) 
+add process p p > w- j @1, (w- > ta- vt~) 
+add process p p > w- j j @2, (w- > ta- vt~) 
+add process p p > w+ j j @2, (w+ > ta+ vt) 
+add process p p > w- j j j @3, (w- > ta- vt~) 
+add process p p > w+ j j j @3, (w+ > ta+ vt)
+
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-WJetTau 
