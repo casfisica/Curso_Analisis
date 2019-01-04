@@ -1,7 +1,24 @@
+set group_subprocesses Auto
+set ignore_six_quark_processes False
+set loop_optimized_output True
+set loop_color_flows False
+set gauge unitary
+set complex_mass_scheme False
+set max_npoint_for_channel 0
+import model sm
+define p = g u c d s u~ c~ d~ s~
+define j = g u c d s u~ c~ d~ s~
+define l+ = e+ mu+
+define l- = e- mu-
+define vl = ve vm vt
+define vl~ = ve~ vm~ vt~
 define p = u u~ d d~ c c~ s s~ b b~ g
 define j = p
-generate p p > w+ w- @0, (w+ > mu+ vm), (w- > mu- vm~)
-add process p p > w+ w- j @1, (w+ > mu+ vm), (w- > mu- vm~)
-add process p p > w+ w- j j @2, (w+ > mu+ vm), (w- > mu- vm~)
-add process p p > w+ w- j j j @3, (w+ > mu+ vm), (w- > mu- vm~)
-output /scratch/cms/Datos/BackGround-WW 
+generate p p > w+ w-  j @1, (w+ > mu+ vm),  (w- > j j)
+add process p p > w+ w-  j @1, (w- > mu- vm~),  (w+ > j j)
+add process p p > w+ w- j j @2, (w+ > mu+ vm),  (w- > j j)
+add process p p > w+ w- j j @2, (w- > mu- vm~),  (w+ > j j)
+add process p p > w+ w- j j j @3, (w+ > mu+ vm),  (w- > j j)
+add process p p > w+ w- j j j @3, (w- > mu- vm~),  (w+ > j j)
+
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-WW

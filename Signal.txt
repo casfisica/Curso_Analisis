@@ -1,6 +1,0 @@
-define p = u u~ d d~ c c~ s s~ b b~ g
-define j = p
-generate p p > t t~ @0, (t > w+ b, w+ > mu+ vm), (t~ > w- b~, w- > mu- vm~)
-add process p p > t t~ j @1, (t > w+ b, w+ > mu+ vm), (t~ > w- b~, w- > mu- vm~)
-add process p p > t t~ j j @2, (t > w+ b, w+ > mu+ vm), (t~ > w- b~, w- > mu- vm~)
-output /scratch/cms/Datos/Signal_2j_mu-nu 
