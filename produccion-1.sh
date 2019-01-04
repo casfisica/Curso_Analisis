@@ -11,7 +11,8 @@ fecha=$(date +"%d-%m-%y_%T")
 
 function Error {
     echo ""
-    echo "usage:" $0 "<path/script> [-Ph=path/output] [-Ne=Nevents] [-d] [-Q=qcut_value] [-Xq=xcut_value] [-mm2l=minim_mass_lepton_pair] [-Run=Run_Times] [-Cl=Cluster_size]"
+    echo "Help: "
+    echo $0 "<path/script> [-Ph=path/output] [-Ne=Nevents] [-d] [-Q=qcut_value] [-Xq=xcut_value] [-mm2l=minim_mass_lepton_pair] [-Run=Run_Times] [-Cl=Cluster_size]"
     echo " "
     echo "Nevents: number of events, 10000=default"
     echo "Run_Times: Number of times MG5_aMC is going to be execute"
@@ -19,6 +20,19 @@ function Error {
 
     exit 0
 }
+
+function IsThere (){
+    #if ls $1 1> /dev/null 2>&1; then
+    if [ -f $1 ]; then
+	echo "file $1 exit"
+    else
+	echo ""
+	echo "!!!ERROR!!!"
+	echo "file $1 do not exist"
+	Error
+    fi
+}
+
 
 if [ -z $1 ]; then #Para fijarse que el argumento no esté vacio
     echo "No path to the MadGraph script supplied (1st argument)"
@@ -54,6 +68,7 @@ flagClusters=False                               # Si va a usar el modo Cluster
 Clsize=60                                      # Tamaño del cluster por defecto
 ClPath='/scratch/camilo/MG-Torque'
 flagDelphesPath=False
+FlagSys=True
 ###########################END OPCIONES POR DEFECTO###########################
 
 #Lee las opciones desde linea de comandos
@@ -65,8 +80,10 @@ do
 	
 	if [ "$Opc" = -Ne ]; then
 	    if [ -z "$Val" ]; then
-		echo "-Ne is empty, using the default Ne=10000"		
+		echo "-Ne is empty, using the default value in the RunCard"
+		FlagNumberOfEvents=False
 	    else
+		FlagNumberOfEvents=True
 		Nevents=$Val
 	    fi
 	fi
@@ -97,6 +114,17 @@ do
             fi
         fi
 
+	if [ "$Opc" = -Rc ]; then
+            if [ -z "$Val" ]; then #mira si el argumento -Rc de la función está vacio                                                                                              
+                echo "Rc Runcard is empty, using default"
+		flagRunCard=False
+            else
+		IsThere $Val
+                RunCardPath=$Val
+                flagRunCard=True
+            fi
+        fi
+
 	if [ "$Opc" = -Xq ]; then
             if [ -z "$Val" ]; then #mira si el argumento -Q de la función está vacio                                                                                              
                 echo "Xq (xqcut) is empty, using default value 0.0"
@@ -114,6 +142,7 @@ do
                 echo "Delp is  empty, using default value (CMS)"
 		flagDelphesPath=False
 	    else
+		IsThere $Val
                 DelphesPath=$Val
 		flagDelphesPath=True
 	    fi
@@ -121,10 +150,11 @@ do
 
 	if [ "$Opc" = -Pyt ]; then
 	    flagPythia=True
-	     if [ -z "$Val" ]; then #mira si el argumento -Pyt de la función está vacio                                                                                             
+	    if [ -z "$Val" ]; then #mira si el argumento -Pyt de la función está vacio                                                                                             
                 echo "Pyt is  empty, using default value"
 		flagPythiaPath=False
 	    else
+		IsThere $Val
                 PythiaPath=$Val
 		flagPythiaPath=True
 	    fi
@@ -133,8 +163,10 @@ do
 
 	if [ "$Opc" = -mm2l ]; then
             if [ -z "$Val" ]; then #mira si el argumento -mm2l de la función está vacio
-                echo "Pmm2l empty, using default value 0.0"
+                echo "Pmm2l empty, using default value in te Card"
+		flagmmass2lep=False
             else
+		flagmmass2lep=True;
 		mmass2lep=$Val
             fi
         fi
@@ -158,7 +190,28 @@ do
 	    flagClusters=True
         fi
 
-	
+	if [ "$Opc" = -Sys ]; then
+            if [ -z "$Val" ]; then #mira si el argumento -Sys de la función está vacio                                                                                             
+                echo "Sys is  empty, using default value Off"
+		FlagSys=True
+	    else
+		if [ "$Val" = on ]; then
+                    FlagSys=False
+		elif [ "$Val" = On ]
+		then
+		    FlagSys=False
+		elif [ "$Val" = Off ]
+		then
+		    FlagSys=True
+		elif [ "$Val" = off ]
+		then
+		    FlagSys=True
+		else
+		    echo "Parameter value invalid, using default value Off"
+		    FlagSys=True
+		fi
+            fi
+        fi
 	
     done <<< "$var"
 
@@ -235,16 +288,29 @@ if [ "$flagClusters" = True ]; then
 
 fi
 
+#Pongo la Run Card Costum
+if [ "$flagRunCard" = True ]; then   
+    eval "cp $RunCardPath $PathOutput/Cards/run_card.dat"
+fi
+
 #MODIFICO LA runcard PARA tener el número de eventos deseado y para hacer un corte en el pt minimo de los leptones cargados
 
-eval "cat $PathOutput/Cards/run_card.dat | sed '/! Enable systematics studies/c\   False  = use_syst      ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
-eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+#Usar systematicos
+if [ "$FlagSys" = True ]; then
+    eval "cat $PathOutput/Cards/run_card.dat | sed '/! Enable systematics studies/c\   False  = use_syst      ! Enable systematics studies'>> $PathOutput/Cards/run_card.dat.tmp"
+    eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+fi
 
-eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
-eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+if [ "$FlagNumberOfEvents" = True ]; then
+    eval "cat $PathOutput/Cards/run_card.dat | sed '/! Number of unweighted events requested/c\  $Nevents = nevents ! Number of unweighted events requested'>> $PathOutput/Cards/run_card.dat.tmp"
+    eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+fi
 
-eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (same flavour) lepton pair/c\ $mmass2lep   = mmll    ! min invariant mass of l+l- (same flavour) lepton pair'>> $PathOutput/Cards/run_card.dat.tmp"
-eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+# Modificar el pt minimo de los leptones
+if [ "$flagmmass2lep" = True ]; then
+    eval "cat $PathOutput/Cards/run_card.dat | sed '/! min invariant mass of l+l- (same flavour) lepton pair/c\ $mmass2lep   = mmll    ! min invariant mass of l+l- (same flavour) lepton pair'>> $PathOutput/Cards/run_card.dat.tmp"
+    eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
+fi
 
 #Modifico el xqcut
 if [ "$flagXq" = True ]; then
@@ -252,6 +318,7 @@ if [ "$flagXq" = True ]; then
     eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 fi
 
+# Siempre usa matching
 eval "cat $PathOutput/Cards/run_card.dat | sed '/! 0 no matching, 1 MLM/c\  1     = ickkw ! 0 no matching, 1 MLM'>> $PathOutput/Cards/run_card.dat.tmp"
 eval "mv $PathOutput/Cards/run_card.dat.tmp $PathOutput/Cards/run_card.dat"
 
