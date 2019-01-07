@@ -17,7 +17,8 @@ function Error {
     echo "Nevents: number of events, 10000=default"
     echo "Run_Times: Number of times MG5_aMC is going to be execute"
     echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=50 -Xq=30 -mm2l=50 -Run=10 -Delp -Pyt -Cl=20"
-
+    echo "Example:" $0 ""
+    
     exit 0
 }
 
