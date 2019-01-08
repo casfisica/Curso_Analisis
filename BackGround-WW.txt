@@ -1,6 +1,5 @@
 set group_subprocesses Auto
 set ignore_six_quark_processes False
-set loop_optimized_output True
 set loop_color_flows False
 set gauge unitary
 set complex_mass_scheme False
@@ -21,4 +20,4 @@ add process p p > w+ w- j j @2, (w- > mu- vm~),  (w+ > j j)
 add process p p > w+ w- j j j @3, (w+ > mu+ vm),  (w- > j j)
 add process p p > w+ w- j j j @3, (w- > mu- vm~),  (w+ > j j)
 
-output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-WW
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-WW 

@@ -12,12 +12,12 @@ fecha=$(date +"%d-%m-%y_%T")
 function Error {
     echo ""
     echo "Help: "
-    echo $0 "<path/script> [-Ph=path/output] [-Ne=Nevents] [-d] [-Q=qcut_value] [-Xq=xcut_value] [-mm2l=minim_mass_lepton_pair] [-Run=Run_Times] [-Cl=Cluster_size]"
+    echo $0 "<path/script> [-Ph=path/output] [-Ne=Nevents] [-d] [-Q=qcut_value] [-Xq=xcut_value] [-mm2l=minim_mass_lepton_pair] [-Run=Run_Times] [-Cl=Cluster_size] [-Rc=Path/to/RunCard.txt] [-Delp==Path/to/DelphesCard.txt] [-Pyt=Path/to/PythonCard.txt]"
     echo " "
     echo "Nevents: number of events, 10000=default"
     echo "Run_Times: Number of times MG5_aMC is going to be execute"
     echo "Example:" $0 "script.txt -Ph=~/output -Ne=10000 -Q=50 -Xq=30 -mm2l=50 -Run=10 -Delp -Pyt -Cl=20"
-    echo "Example:" $0 ""
+    echo "Example:" $0 "BackGround-tW.txt -Ne=10 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/pythia8_card.dat"
     
     exit 0
 }
@@ -26,6 +26,7 @@ function IsThere (){
     #if ls $1 1> /dev/null 2>&1; then
     if [ -f $1 ]; then
 	echo "file $1 exit"
+	sleep 1s
     else
 	echo ""
 	echo "!!!ERROR!!!"
@@ -105,7 +106,7 @@ do
 	fi
 
 
-	if [ "$Opc" = -Q ]; then
+	if [ "$Opc" = -Q ]; then 
             if [ -z "$Val" ]; then #mira si el argumento -Q de la función está vacio                                                                                              
                 echo "Q (qcut) is empty, using default value -1"
 		flagQ=False

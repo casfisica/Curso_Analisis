@@ -14,10 +14,8 @@ define vl = ve vm vt
 define vl~ = ve~ vm~ vt~
 define p = u u~ d d~ c c~ s s~ b b~ g
 define j = p
-generate p p > t j @1, (t > b w+, (w+ > mu+ vm))
-add process p p > t~ j @1, (t~ > b~ w-, (w- > mu- vm~))
-add process p p > t j j @2, (t > b w+, (w+ > mu+ vm))
-add process p p > t~ j j @2, (t~ > b~ w-, (w- > mu- vm~))
-add process p p > t j j j @3, (t > b w+, (w+ > mu+ vm))
-add process p p > t~ j j j @3, (t~ > b~ w-, (w- > mu- vm~))
-output
+generate p p > l+ l- /h @0
+add process p p > l+ l- /h j @1
+add process p p > l+ l- /h j j @2
+add process p p > l+ l- /h j j j @3
+output output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-DrellYan
