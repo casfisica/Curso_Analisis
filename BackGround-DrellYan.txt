@@ -18,4 +18,4 @@ generate p p > l+ l- /h @0
 add process p p > l+ l- /h j @1
 add process p p > l+ l- /h j j @2
 add process p p > l+ l- /h j j j @3
-output output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-DrellYan
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-DrellYan
