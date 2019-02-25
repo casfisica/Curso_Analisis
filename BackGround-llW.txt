@@ -1,16 +1,23 @@
-define p = u u~ d d~ c c~ s s~ b b~ g 
+set group_subprocesses Auto
+set ignore_six_quark_processes False
+set loop_color_flows False
+set gauge unitary
+set complex_mass_scheme False
+set max_npoint_for_channel 0
+define p = u u~ d d~ c c~ s s~ b b~ g
+define p = g u c d s u~ c~ d~ s~
+define j = g u c d s u~ c~ d~ s~
+define l+ = e+ mu+ ta+
+define l- = e- mu- ta-
+define vl = ve vm vt
+define vl~ = ve~ vm~ vt~
+define p = u u~ d d~ c c~ s s~ b b~ g
 define j = p
+generate p p > w+ j @1, (l+ > l+ vl)
+add process p p > w- j @1, (w- > l- vl~)
+add process p p > w- j j @2, (w- > l- vl~)
+add process p p > w+ j j @2, (w+ > l+ vl)
+add process p p > w- j j j @3, (w- > l- vl~)
+add process p p > w+ j j j @3, (w+ > l+ vl)
 
-define ell- = mu- ta-
-define ell+ = mu+ ta+
-define vell = vm vt
-define vell~ = vm~ vt~
-
-generate p p > w+ j @1, (w+ > ell+ vell) 
-add process p p > w- j @1, (w- > ell- vell~) 
-add process p p > w- j j @2, (w- > ell- vell~) 
-add process p p > w+ j j @2, (w+ > ell+ vell) 
-add process p p > w- j j j @3, (w- > ell- vell~) 
-add process p p > w+ j j j @3, (w+ > ell+ vell)
-
-output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-llW 
+output /home/camilo/cms/Scripts_MadGraph_VLFTEO/Datos/BackGround-lW 
