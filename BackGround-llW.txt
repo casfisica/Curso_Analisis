@@ -13,7 +13,7 @@ define vl = ve vm vt
 define vl~ = ve~ vm~ vt~
 define p = u u~ d d~ c c~ s s~ b b~ g
 define j = p
-generate p p > w+ j @1, (l+ > l+ vl)
+generate p p > w+ j @1, (w+ > l+ vl)
 add process p p > w- j @1, (w- > l- vl~)
 add process p p > w- j j @2, (w- > l- vl~)
 add process p p > w+ j j @2, (w+ > l+ vl)
