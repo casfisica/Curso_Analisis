@@ -17,20 +17,15 @@ export PATH=$PATH:$MadGrapgSYS/bin
 
 cd $PBS_O_WORKDIR
 #Single Top
-./produccion-1.sh BackGround-tW.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/pythia8_card.dat
+./produccion-1.sh BackGround-tW.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card_CP5.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card_CP5.dat
 #WJets
-
-./produccion-1.sh BackGround-llW.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card.dat
-
-./produccion-1.sh BackGround-mumuW.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card.dat
-
-./produccion-1.sh BackGround-tautauW.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card.dat
+./produccion-1.sh BackGround-mumuW_With0Jets.txt -Ne=50000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card_CP5.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card_CP5.dat
 
 #Single Top
-./produccion-1.sh BackGround-SingleTop.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/pythia8_card.dat
+./produccion-1.sh BackGround-SingleTop.txt -Ne=50000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card_CP5.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/SingleTop/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card_CP5.dat
 
 #WW
-./produccion-1.sh BackGround-WW.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WW/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WW/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WW/pythia8_card.dat
+./produccion-1.sh BackGround-WW.txt -Ne=50000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card_CP5.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WW/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card_CP5.dat
 
 #WZ
-./produccion-1.sh BackGround-WZ.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WZ/run_card.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WZ/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WZ/pythia8_card.dat
+./produccion-1.sh BackGround-WZ.txt -Ne=10000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card_CP5.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/WZ/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card_CP5.dat
