@@ -4,6 +4,8 @@ define the bash variable MadGrapgSYS (path to the MadGraph folder)
 
 qsub script.sub
 
-Also using nohub:
+Also using nohub: (nohup myprogram > myprogram.out 2> myprogram.err)
 nohup ./produccion-1.sh BackGround-mumuW_With0Jets.txt -Ne=50000 -Run=2 -Rc=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/run_card_CP5.dat -Delp=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/delphes_card.dat -Pyt=/home/camilo/cms/Scripts_MadGraph_VLFTEO/Cards_Costumed/Wjet/pythia8_card_CP5.dat > mumuW_With0Jets.out 2> mumuW_With0Jets.err &
-nohup myprogram > mumuW_With0Jets.out 2> mumuW_With0Jets.err
+To monitor use:
+tail -f mumuW_With0Jets.out
+
